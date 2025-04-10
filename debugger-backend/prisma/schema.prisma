@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Emailwithcode{
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  code         String
+}
+
+
+model Student {
+  id           Int               @id @default(autoincrement())
+  username        String            @unique
+  name         String
+  password     String
+  created_at   DateTime          @default(now())
+  codes        Code[]    @relation(name: "studentTocode")
+  session      Session[] @relation(name: "sessionTocode")
+
+}
+
+model Session {
+  id           Int      @id @default(autoincrement())
+  student_id   Int      
+  name         String
+  created_at   DateTime          @default(now())
+  codes        Code[]   @relation(name: "sessiontocode")
+  student      Student  @relation(name: "sessionTocode", fields: [student_id], references: [id],onDelete: Cascade)
+}
+
+
+model Code {
+  id           Int      @id @default(autoincrement())
+  student_id   Int      
+  session_id   Int
+  code         String
+  debugged     String
+  title        String
+  info         String
+  created_at   DateTime          @default(now())
+  student      Student  @relation(name: "studentTocode", fields: [student_id], references: [id],onDelete: Cascade)
+  session      Session  @relation(name: "sessiontocode", fields: [session_id],references: [id],onDelete: Cascade)
+}
